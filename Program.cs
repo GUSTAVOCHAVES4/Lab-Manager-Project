@@ -8,6 +8,7 @@ var databaseConfig = new DatabaseConfig();
 new DatabaseSetup(databaseConfig);
 
 var computerRepository = new ComputerRepository(databaseConfig);
+var LabRepository = new LabRepository(databaseConfig);
 
 // Routing
 
@@ -36,6 +37,26 @@ if(modelName == "Computer")
         var computer = new Computer(id, ram, processor);
         computerRepository.Save(computer);
 
-    }   
+    } 
+    //Colocar os IFs relacionados aos métodos, criados no Repository, aqui no Program 
+
+    if(modelName == "Lab")
+    {
+        if(modelAction == "List")
+        {
+            Console.WriteLine("Lab List");
+            foreach(var lab in LabRepository.GetAll())
+            {
+                var message = $"{lab.Id}, {lab.Number}, {lab.Name}, {lab.Block}";
+                Console.WriteLine(message);
+            }
+
+        }
+
+        if(modelAction == "New")
+        {
+
+        }
+    } 
 }
 

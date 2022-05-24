@@ -55,5 +55,7 @@ class ComputerRepository
 
         return computer;
 
+        // Colocar métodos aqui no Repository
+
     }
 }
