@@ -36,6 +36,32 @@ if(modelName == "Computer")
         var computer = new Computer(id, ram, processor);
         computerRepository.Save(computer);
 
-    }   
-}
+    }
+
+    if (modelAction == "Show")
+    {
+        int id = Convert.ToInt32(args[2]);
+        var computer = computerRepository.GetById(id);
+        Console.WriteLine("{0}, {1}, {2}", computer.Id, computer.Ram, computer.Processor);
+    }
+
+    if (modelAction == "Update")
+    {
+        Console.WriteLine("Computer Updated");
+        int id = Convert.ToInt32(args[2]);
+        string ram = args[3];
+        string processor = args[4];
+
+        var computer = new Computer(id, ram, processor);
+        computerRepository.Update(computer);
+    }
+
+    if (modelAction == "Delete")
+    {
+        Console.WriteLine("Computer Deleted");
+        int id = Convert.ToInt32(args[2]);
+        computerRepository.Delete(id);
+    }
+}   
+
 
