@@ -1,6 +1,7 @@
 using LabManager.Database;
 using LabManager.Models;
 using Microsoft.Data.Sqlite;
+using Dapper;
 
 namespace LabManager.Repositories;
 
@@ -13,47 +14,25 @@ class ComputerRepository
         this.databaseConfig = databaseConfig;
     }
 
-    public List<Computer> GetAll()
+    public IEnumerable<Computer> GetAll()
 
     {
-        var connection = new SqliteConnection(databaseConfig.ConnectionString);
+        using var connection = new SqliteConnection(databaseConfig.ConnectionString);
         connection.Open();
 
-        var command = connection.CreateCommand();
-        command.CommandText = "SELECT * FROM Computers;";
-
-        var reader = command.ExecuteReader();
-
-        var computers = new List<Computer>();
-
-        while(reader.Read()) //quando não sei quantos itens tenho
-        {
-            //var computer = readerToComputer(reader);
-            //computers.Add(computer); outro meio de fazer oq está abaixo
-
-            computers.Add(readerToComputer(reader));
-        }
-        connection.Close();
+        var computers = connection.Query<Computer>("SELECT * FROM Computers");
 
         return computers;
     }
 
     public Computer Save (Computer computer)
     {
-        var connection = new SqliteConnection("Data Source=database.db");
+        using var connection = new SqliteConnection(databaseConfig.ConnectionString);
         connection.Open();
 
-        var command = connection.CreateCommand();
-        command.CommandText = "INSERT INTO Computers VALUES($id, $ram, $processor);";
-        command.Parameters.AddWithValue("$id", computer.Id);
-        command.Parameters.AddWithValue("$ram", computer.Ram);
-        command.Parameters.AddWithValue("$processor", computer.Processor);
-        
-        command.ExecuteNonQuery();
-        connection.Close();
+        connection.Execute("INSERT INTO Computers VALUES (@Id, @Ram, @Processor)", computer);
 
         return computer;
-
     }
 
     public Computer GetById(int id)
@@ -110,12 +89,18 @@ class ComputerRepository
         connection.Close();
     }
 
-    public bool existsById(int id)
+    public bool ExistsById(int id)
     {
+        var connection = new SqliteConnection(databaseConfig.ConnectionString);
+        connection.Open();
 
+        var command = connection.CreateCommand();
+        command.CommandText = "SELECT count(id) FROM Computers WHERE id = $id;";
+        command.Parameters.AddWithValue("$id", id);
 
+        var result = Convert.ToBoolean(command.ExecuteScalar());
 
-        return true;
+        return result;
     }
 
     private Computer readerToComputer(SqliteDataReader reader)

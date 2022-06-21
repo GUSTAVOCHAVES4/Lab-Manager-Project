@@ -1,8 +1,6 @@
 ﻿using LabManager.Database;
 using LabManager.Models;
 using LabManager.Repositories;
-using Microsoft.Data.Sqlite;
-
 
 var databaseConfig = new DatabaseConfig();
 new DatabaseSetup(databaseConfig);
@@ -35,42 +33,53 @@ if(modelName == "Computer")
 
         var computer = new Computer(id, ram, processor);
         computerRepository.Save(computer);
-
     }
 
     if (modelAction == "Show")
     {
-        if(ComputerRepository.existsById(id)) 
-        {
-            var computer = new ComputerRepository.GetById(id);
-            Console.WriteLine("{0}, {1}, {2}", computer.Id, computer.Ram, computer.Processor);
-    
-        } else {
-            Console.WriteLine($"Computer com id {id} não existe");
-        }
-
         var id = Convert.ToInt32(args[2]);
-        var computer = computerRepository.GetById(id);
-        Console.WriteLine("{0}, {1}, {2}", computer.Id, computer.Ram, computer.Processor);
+
+        if(computerRepository.ExistsById(id))
+        {
+            var computer = computerRepository.GetById(id);
+            Console.WriteLine($"{computer.Id}, {computer.Ram}, {computer.Processor}");
+        } 
+        else 
+        {
+            Console.WriteLine($"O computador com Id {id} não existe.");
     }
 
     if (modelAction == "Update")
     {
-        var id = Convert.ToInt32(args[2]);
-        var ram = args[3];
-        var processor = args[4];
-
-        var computer = new Computer(id, ram, processor);
-        computerRepository.Update(computer);
-        Console.WriteLine("Computer Updated");
+        var Id = Convert.ToInt32(args[2]);
+        if(computerRepository.ExistsById(id))
+        {
+            string ram = args[3];
+            string processor = args[4];
+            var computer = new Computer(id, ram, processor);
+            computerRepository.Update(computer);
+        }
+        else
+        {
+            Console.WriteLine($"O computador com Id {id} não existe.");
+        }
     }
 
     if (modelAction == "Delete")
     {
-        var id = Convert.ToInt32(args[2]);
-        computerRepository.Delete(id);
-         Console.WriteLine("Computer Deleted");
+        var Id = Convert.ToInt32(args[2]);
+        Console.WriteLine("Computer Deleted");
+
+        if(computerRepository.ExistsById(id))
+        {
+            computerRepository.Delete(id);
+        }
+        else
+        {
+            Console.WriteLine($"Computer com id {id} nao existe");
+        }
     }
+}
 }   
 
 
